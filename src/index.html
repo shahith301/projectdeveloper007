@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title> apply for job</title>
+        <style>
+            h1{
+    background-color:black;
+    text-align: center;
+    color:white;
+    border: 2px solid white;
+    margin: 20px;
+    padding: 40px;
+    width: auto;
+    height: 40px;
+
+}
+form{
+       
+        margin:10px auto;
+        width: 35%;
+        padding: 30px;
+        font-size:20px; 
+        background-color:darkgrey;
+        
+    }
+    
+    input:invalid {
+        border: 2px solid red;
+      }
+      
+      input:valid {
+        border: 2px solid black;
+      }
+
+        </style>
+        <script>
+            const jobForm = document.getElementById('jobForm');
+            jobForm.addEventHandler('submit', handleSubmit);
+            
+            async function handleSubmit(event){
+                event.preventDefault();
+                const form = event.currentTarget;
+                const url = form.action;
+                
+                //custom validation
+                //name should > 3 chars 
+                //return false
+                
+                try {
+                    const formData = new FormData(form);
+                    const responseData = await postFormData({ url, formData });
+                    console.log({ responseData });
+                } catch (error) {
+                    console.error(error);
+                }
+                
+            
+            }
+            
+            async function postFormData({url, formData}){
+            
+                const plainFormData = Object.fromEntries(formData.entries());
+                const formDataJsonString = JSON.stringify(plainFormData);
+                const fetchOptions = {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    },
+                    body: formDataJsonString,
+                };
+                const response = await fetch(url, fetchOptions);
+            
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+                }
+                return response.json();
+            }
+            
+            async function getAllCandidates(){
+            const url = 'https://reqres.in/api/users/2';
+            const fetchOptions = {
+                    method: "get",
+                    headers: {
+                        "Content-Type": "application/json",
+                        Accept: "application/json",
+                    }
+                };
+                const response = await fetch(url, fetchOptions);
+                if (!response.ok) {
+                    const errorMessage = await response.text();
+                    throw new Error(errorMessage);
+                }
+                const responseData = await response.json();
+                    //const jsonData = JSON.stringify(responseData);
+                    var allCustomer = "<h1 style='background-color:green;color:block'>All Forms</h1>";
+                    
+                    responseData.forEach((item) => {
+                        allCustomer += 'Id: ' + item.id + "<br>";
+                        allCustomer += 'First Name: ' + item.fName + "<br>";
+                        allCustomer += 'Last Name: ' + item.lName + "<br>";
+                        allCustomer += 'Mobile: ' + item.mobile + "<br>";
+                        allCustomer += 'Email: ' + item.email + "<br>";
+                    });
+                    
+                    document.getElementById("candidateList").innerHTML = allCustomer;
+            }
+            
+            
+            </script>
+    </head>
+    <body style="background-color:dimgray">
+        <h1>Job Application Form</h1>
+        <form id="jobform" class="form-style" method="post" action="https://reqres.in/api/users?page=2">
+
+        <label for="fname">First Name: </label>
+        <input type="text" name="fname" id="fname" placeholder="" required pattern = '[a-zA-Z]+' /> <br><br>
+
+        <label for="lname">Last Name: </label>
+        <input type="text" name="lname" id="lname" placeholder="" required pattern = '[a-zA-Z]+'/> <br><br>
+
+        <label for="gender">Gender:</label>
+        <input type="radio" name="gender" id="gender" value="male" required /><label>male</label>
+        <input type="radio" name="gender" id="gender" value="female" required /><label>female</label><br><br>
+
+        <label for="dob">DOB:</label>
+        <input type="date" name="dob" id="dob" required /><br><br>
+
+        <label for="qualification">Qualification:</label>
+        <select name="qualification" id="qualification">
+        <option id="bca" value="bca">BCA ComputerApplication</option>
+        <option id="bsc" value="bsc">BSC ComputerScience</option>
+        <option id="mca" value="mca">MCA ComputerApplication</option>
+        <option id="msc" value="msc">MSC ComputerScience</option>
+        <option id="B.E" value="B.E">B.E computer engineering</option>
+        <option id="b.tech" value="b.tech">B.Tech</option>
+        </select><br><br>
+
+        <label for="experience">Experience:</label>
+        <input type="text" name="experience" id="experience" required /><br><br>
+
+        <label for="mobile">Mobile No:</label>
+        <input type="text" name="mobile" id="mobile" required pattern='[0-9]+' /><br><br>
+
+        <label for="email">Email id:</label>
+        <input type="email" name="email" id="email" required /><br><br>
+
+        <label for="password">Password:</label>
+        <input type="text" name="password" id="password" required/><br><br>
+
+        <label for="address">Address:</label>
+        <textarea name="address" id="address"></textarea><br><br>
+
+        <input type="submit" value="submit"/>
+
+        <button onclick="getallcandidates()">Get all Candidates</button>
+        <p id="candidateslist">
+
+        </p>
+        </form>
+        </body>
+        </html>
